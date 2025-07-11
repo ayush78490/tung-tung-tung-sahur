@@ -1,325 +1,316 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unity WebGL | Tung Tung Tung Sahur</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <script defer src="/_vercel/insights/script.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Unity WebGL | Tung Tung Tung Sahur</title>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e2a44 0%, #2c3e50 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-            padding: 10px;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e2a44 0%, #2c3e50 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+      padding: 10px;
+    }
 
-        #unity-container {
-            width: 100%;
-            max-width: 960px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            aspect-ratio: 1080/2340; /* Match your game's aspect ratio */
-        }
+    #unity-container {
+      width: 100%;
+      max-width: 960px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: 1080/2340;
+    }
 
-        #unity-canvas {
-            width: 100% !important;
-            height: auto !important;
-            background: #000000;
-            display: block;
-            aspect-ratio: 1080/2340; /* Match your game's aspect ratio */
-            object-fit: contain;
-        }
+    #unity-canvas {
+      width: 100% !important;
+      height: auto !important;
+      background: #000000;
+      display: block;
+      aspect-ratio: 1080/2340;
+      object-fit: contain;
+    }
 
-        #unity-loading-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.3s ease;
-            z-index: 10;
-        }
+    #unity-loading-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+    }
 
-        #unity-logo {
-            width: 100px;
-            height: 100px;
-            /* background: url('TemplateData/unity-logo.png') no-repeat center; */
-            background-size: contain;
-            margin-bottom: 15px;
-        }
+    #unity-logo {
+      width: 100px;
+      height: 100px;
+      background: url('https://via.placeholder.com/100') no-repeat center;
+      background-size: contain;
+      margin-bottom: 15px;
+    }
 
-        #unity-progress-bar-empty {
-            width: 70%;
-            max-width: 300px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
+    #unity-progress-bar-empty {
+      width: 70%;
+      max-width: 300px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
 
-        #unity-progress-bar-full {
-            width: 0%;
-            height: 100%;
-            background: #4CAF50;
-            transition: width 0.3s ease;
-        }
+    #unity-progress-bar-full {
+      width: 0%;
+      height: 100%;
+      background: #4CAF50;
+      transition: width 0.3s ease;
+    }
 
-        #unity-warning {
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            text-align: center;
-            padding: 5px;
-            display: none;
-            z-index: 20;
-        }
+    #unity-warning {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      padding: 5px;
+      display: none;
+      z-index: 20;
+    }
 
-        #unity-warning div {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 12px;
-            font-weight: 500;
-            max-width: 90%;
-        }
+    #unity-warning div {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      max-width: 90%;
+    }
 
-        #unity-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 15px;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            flex-shrink: 0;
-        }
+    #unity-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 15px;
+      background: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+      flex-shrink: 0;
+    }
 
-        #unity-webgl-logo {
-            width: 70px;
-            height: 20px;
-            /* background: url('TemplateData/webgl-logo.png') no-repeat center; */
-            background-size: contain;
-        }
+    #unity-webgl-logo {
+      width: 70px;
+      height: 20px;
+      background: url('https://via.placeholder.com/70x20') no-repeat center;
+      background-size: contain;
+    }
 
-        #unity-build-title {
-            color: #2c3e50;
-            font-size: 12px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
+    #unity-build-title {
+      color: #2c3e50;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
 
-        #unity-fullscreen-button {
-            width: 20px;
-            height: 20px;
-            /* background: url('TemplateData/fullscreen.png') no-repeat center; */
-            background-size: contain;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
+    #unity-fullscreen-button {
+      width: 20px;
+      height: 20px;
+      background: url('https://via.placeholder.com/20') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
 
-        #unity-fullscreen-button:hover {
-            transform: scale(1.1);
-        }
+    #unity-fullscreen-button:hover {
+      transform: scale(1.1);
+    }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 0;
-            }
-            
-            #unity-container {
-                max-width: 100%;
-                border-radius: 0;
-                box-shadow: none;
-                height: 100vh;
-                width: 100vw;
-            }
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
 
-            #unity-footer {
-                padding: 6px 10px;
-            }
+      #unity-container {
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        height: 100vh;
+        width: 100vw;
+      }
 
-            #unity-webgl-logo {
-                width: 60px;
-            }
+      #unity-footer {
+        padding: 6px 10px;
+      }
 
-            #unity-build-title {
-                font-size: 10px;
-            }
+      #unity-webgl-logo {
+        width: 60px;
+      }
 
-            #unity-fullscreen-button {
-                width: 18px;
-                height: 18px;
-            }
-        }
+      #unity-build-title {
+        font-size: 10px;
+      }
 
-        @media (max-width: 480px) {
-            #unity-logo {
-                width: 80px;
-                height: 80px;
-            }
+      #unity-fullscreen-button {
+        width: 18px;
+        height: 18px;
+      }
+    }
 
-            #unity-progress-bar-empty {
-                width: 80%;
-            }
+    @media (max-width: 480px) {
+      #unity-logo {
+        width: 80px;
+        height: 80px;
+      }
 
-            #unity-warning div {
-                font-size: 10px;
-                padding: 6px 12px;
-            }
-        }
-    </style>
+      #unity-progress-bar-empty {
+        width: 80%;
+      }
+
+      #unity-warning div {
+        font-size: 10px;
+        padding: 6px 12px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="unity-container">
-        <canvas id="unity-canvas" tabindex="-1"></canvas>
-        <div id="unity-loading-bar">
-            <div id="unity-logo"></div>
-            <div id="unity-progress-bar-empty">
-                <div id="unity-progress-bar-full"></div>
-            </div>
-        </div>
-        <div id="unity-warning"></div>
-        <div id="unity-footer">
-            <div id="unity-webgl-logo"></div>
-            <div id="unity-build-title">Tung Tung Tung Sahur</div>
-            <div id="unity-fullscreen-button"></div>
-        </div>
+  <div id="unity-container">
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <div id="unity-loading-bar">
+      <div id="unity-logo"></div>
+      <div id="unity-progress-bar-empty">
+        <div id="unity-progress-bar-full"></div>
+      </div>
     </div>
-    <script>
-        var container = document.querySelector("#unity-container");
-        var canvas = document.querySelector("#unity-canvas");
-        var loadingBar = document.querySelector("#unity-loading-bar");
-        var progressBarFull = document.querySelector("#unity-progress-bar-full");
-        var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-        var warningBanner = document.querySelector("#unity-warning");
-        var unityInstance = null;
+    <div id="unity-warning"></div>
+    <div id="unity-footer">
+      <div id="unity-webgl-logo"></div>
+      <div id="unity-build-title">Tung Tung Tung Sahur</div>
+      <div id="unity-fullscreen-button"></div>
+    </div>
+  </div>
 
-        function unityShowBanner(msg, type) {
-            function updateBannerVisibility() {
-                warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-            }
-            var div = document.createElement('div');
-            div.innerHTML = msg;
-            warningBanner.appendChild(div);
-            if (type === 'error') div.style = 'background: #dc3545; padding: 8px 16px;';
-            else {
-                if (type === 'warning') div.style = 'background: #ffc107; padding: 8px 16px; color: #212529;';
-                setTimeout(function() {
-                    warningBanner.removeChild(div);
-                    updateBannerVisibility();
-                }, 5000);
-            }
-            updateBannerVisibility();
-        }
+  <script>
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+    var warningBanner = document.querySelector("#unity-warning");
+    var unityInstance = null;
 
-        // Improved responsive handling
-        function resizeUnityCanvas() {
-            const gameWidth = 960;  // Match your Unity game width
-            const gameHeight = 600; // Match your Unity game height
-            const aspectRatio = gameWidth / gameHeight;
-            
-            let width, height;
-            
-            // Get available space
-            const containerWidth = window.innerWidth;
-            const containerHeight = window.innerHeight - (container.querySelector('#unity-footer').offsetHeight || 37);
-            
-            // Calculate size while maintaining aspect ratio
-            if (containerWidth / containerHeight > aspectRatio) {
-                width = containerHeight * aspectRatio;
-                height = containerHeight;
-            } else {
-                width = containerWidth;
-                height = containerWidth / aspectRatio;
-            }
-            
-            // Apply to canvas
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            canvas.width = width * window.devicePixelRatio;
-            canvas.height = height * window.devicePixelRatio;
-            
-            // Update Unity instance if available
-            if (unityInstance) {
-                unityInstance.SetFullscreen(0); // Ensure not in fullscreen when resizing
-                unityInstance.Module.canvas.style.width = width + 'px';
-                unityInstance.Module.canvas.style.height = height + 'px';
-                unityInstance.Module.canvas.width = width * window.devicePixelRatio;
-                unityInstance.Module.canvas.height = height * window.devicePixelRatio;
-            }
-        }
+    function unityShowBanner(msg, type) {
+      function updateBannerVisibility() {
+        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+      }
+      var div = document.createElement('div');
+      div.innerHTML = msg;
+      warningBanner.appendChild(div);
+      if (type === 'error') div.style = 'background: #dc3545; padding: 8px 16px;';
+      else {
+        if (type === 'warning') div.style = 'background: #ffc107; padding: 8px 16px; color: #212529;';
+        setTimeout(function () {
+          warningBanner.removeChild(div);
+          updateBannerVisibility();
+        }, 5000);
+      }
+      updateBannerVisibility();
+    }
 
-        // Initial resize and listen for window resize
-        window.addEventListener('resize', resizeUnityCanvas);
+    function resizeUnityCanvas() {
+      const gameWidth = 960;
+      const gameHeight = 600;
+      const aspectRatio = gameWidth / gameHeight;
+
+      let width, height;
+
+      const containerWidth = window.innerWidth;
+      const containerHeight = window.innerHeight - (container.querySelector('#unity-footer').offsetHeight || 37);
+
+      if (containerWidth / containerHeight > aspectRatio) {
+        width = containerHeight * aspectRatio;
+        height = containerHeight;
+      } else {
+        width = containerWidth;
+        height = containerWidth / aspectRatio;
+      }
+
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+
+      if (unityInstance) {
+        unityInstance.SetFullscreen(0);
+        unityInstance.Module.canvas.style.width = width + 'px';
+        unityInstance.Module.canvas.style.height = height + 'px';
+        unityInstance.Module.canvas.width = width * window.devicePixelRatio;
+        unityInstance.Module.canvas.height = height * window.devicePixelRatio;
+      }
+    }
+
+    window.addEventListener('resize', resizeUnityCanvas);
+    resizeUnityCanvas();
+
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/tungTungCompile.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/tungTungCompile.data.br",
+      frameworkUrl: buildUrl + "/tungTungCompile.framework.js.br",
+      codeUrl: buildUrl + "/tungTungCompile.wasm.br",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "Tung tung tung sahur",
+      productVersion: "1.0",
+      showBanner: unityShowBanner,
+    };
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      config.devicePixelRatio = 1;
+      document.body.style.touchAction = 'none';
+      document.body.style.overflow = 'hidden';
+    }
+
+    loadingBar.style.display = "block";
+
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+        progressBarFull.style.width = 100 * progress + "%";
+      }).then((instance) => {
+        unityInstance = instance;
+        loadingBar.style.display = "none";
+        fullscreenButton.onclick = () => {
+          unityInstance.SetFullscreen(1);
+        };
         resizeUnityCanvas();
+      }).catch((message) => {
+        unityShowBanner(`Failed to load game: ${message}`, 'error');
+      });
+    };
+    script.onerror = () => {
+      unityShowBanner('Failed to load Unity script. Check if the .br files are served with Content-Encoding: br.', 'error');
+    };
 
-        var buildUrl = "Build";
-        var loaderUrl = buildUrl + "/tungTungCompile.loader.js";
-        var config = {
-            dataUrl: buildUrl + "/tungTungCompile.data.br",
-            frameworkUrl: buildUrl + "/tungTungCompile.framework.js.br",
-            codeUrl: buildUrl + "/tungTungCompile.wasm.br",
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "DefaultCompany",
-            productName: "Tung tung tung sahur",
-            productVersion: "1.0",
-            showBanner: unityShowBanner,
-        };
-
-        // Mobile device adjustments
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            config.devicePixelRatio = 1; // Improve mobile performance
-            // Prevent touch scroll
-            document.body.style.touchAction = 'none';
-            document.body.style.overflow = 'hidden';
-        }
-
-        loadingBar.style.display = "block";
-
-        var script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-            createUnityInstance(canvas, config, (progress) => {
-                progressBarFull.style.width = 100 * progress + "%";
-            }).then((instance) => {
-                unityInstance = instance;
-                loadingBar.style.display = "none";
-                fullscreenButton.onclick = () => {
-                    unityInstance.SetFullscreen(1);
-                };
-                // Final resize after loading
-                resizeUnityCanvas();
-            }).catch((message) => {
-                unityShowBanner(`Failed to load game: ${message}`, 'error');
-            });
-        };
-        script.onerror = () => {
-            unityShowBanner('Failed to load Unity script. Check if the .br files are served with Content-Encoding: br.', 'error');
-        };
-
-        document.body.appendChild(script);
-    </script>
+    document.body.appendChild(script);
+  </script>
 </body>
 </html>
