@@ -21,12 +21,12 @@
             justify-content: center;
             align-items: center;
             overflow: auto;
+            padding: 10px;
         }
 
         #unity-container {
             width: 100%;
             max-width: 960px;
-            margin: 10px;
             background: #ffffff;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -34,12 +34,16 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            aspect-ratio: 1080/2340; /* Match your game's aspect ratio */
         }
 
         #unity-canvas {
-            width: 100%;
+            width: 100% !important;
+            height: auto !important;
             background: #000000;
             display: block;
+            aspect-ratio: 1080/2340; /* Match your game's aspect ratio */
+            object-fit: contain;
         }
 
         #unity-loading-bar {
@@ -139,8 +143,12 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+            
             #unity-container {
-                margin: 0;
+                max-width: 100%;
                 border-radius: 0;
                 box-shadow: none;
                 height: 100vh;
@@ -205,6 +213,7 @@
         var progressBarFull = document.querySelector("#unity-progress-bar-full");
         var fullscreenButton = document.querySelector("#unity-fullscreen-button");
         var warningBanner = document.querySelector("#unity-warning");
+        var unityInstance = null;
 
         function unityShowBanner(msg, type) {
             function updateBannerVisibility() {
@@ -224,36 +233,46 @@
             updateBannerVisibility();
         }
 
-        // Function to adjust canvas size while maintaining aspect ratio
-        function resizeCanvas() {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const aspectRatio = 960 / 600; // Default aspect ratio
+        // Improved responsive handling
+        function resizeUnityCanvas() {
+            const gameWidth = 960;  // Match your Unity game width
+            const gameHeight = 600; // Match your Unity game height
+            const aspectRatio = gameWidth / gameHeight;
+            
             let width, height;
-
-            if (isMobile) {
-                // Mobile: Fill the available space
-                width = window.innerWidth;
-                height = window.innerHeight - (container.querySelector('#unity-footer').offsetHeight || 37);
-                if (height > width / aspectRatio) {
-                    height = width / aspectRatio;
-                } else {
-                    width = height * aspectRatio;
-                }
+            
+            // Get available space
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight - (container.querySelector('#unity-footer').offsetHeight || 37);
+            
+            // Calculate size while maintaining aspect ratio
+            if (containerWidth / containerHeight > aspectRatio) {
+                width = containerHeight * aspectRatio;
+                height = containerHeight;
             } else {
-                // Desktop: Constrain to max-width or window size
-                width = Math.min(window.innerWidth - 20, 960); // Account for margins
-                height = width / aspectRatio;
+                width = containerWidth;
+                height = containerWidth / aspectRatio;
             }
-
-            canvas.style.width = `${width}px`;
-            canvas.style.height = `${height}px`;
-            canvas.width = width * (isMobile ? 1 : window.devicePixelRatio);
-            canvas.height = height * (isMobile ? 1 : window.devicePixelRatio);
+            
+            // Apply to canvas
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            
+            // Update Unity instance if available
+            if (unityInstance) {
+                unityInstance.SetFullscreen(0); // Ensure not in fullscreen when resizing
+                unityInstance.Module.canvas.style.width = width + 'px';
+                unityInstance.Module.canvas.style.height = height + 'px';
+                unityInstance.Module.canvas.width = width * window.devicePixelRatio;
+                unityInstance.Module.canvas.height = height * window.devicePixelRatio;
+            }
         }
 
         // Initial resize and listen for window resize
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', resizeUnityCanvas);
+        resizeUnityCanvas();
 
         var buildUrl = "Build";
         var loaderUrl = buildUrl + "/tungTungCompile.loader.js";
@@ -268,8 +287,12 @@
             showBanner: unityShowBanner,
         };
 
+        // Mobile device adjustments
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             config.devicePixelRatio = 1; // Improve mobile performance
+            // Prevent touch scroll
+            document.body.style.touchAction = 'none';
+            document.body.style.overflow = 'hidden';
         }
 
         loadingBar.style.display = "block";
@@ -279,11 +302,14 @@
         script.onload = () => {
             createUnityInstance(canvas, config, (progress) => {
                 progressBarFull.style.width = 100 * progress + "%";
-            }).then((unityInstance) => {
+            }).then((instance) => {
+                unityInstance = instance;
                 loadingBar.style.display = "none";
                 fullscreenButton.onclick = () => {
                     unityInstance.SetFullscreen(1);
                 };
+                // Final resize after loading
+                resizeUnityCanvas();
             }).catch((message) => {
                 unityShowBanner(`Failed to load game: ${message}`, 'error');
             });
