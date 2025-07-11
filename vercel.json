@@ -2,26 +2,23 @@
   "version": 2,
   "headers": [
     {
-      "source": "/Build/**/*.js",
+      "source": "/Build/(.*).js.br",
       "headers": [
+        { "key": "Content-Encoding", "value": "br" },
         { "key": "Content-Type", "value": "application/javascript" }
       ]
     },
     {
-      "source": "/Build/**/*.framework.js",
+      "source": "/Build/(.*).wasm.br",
       "headers": [
-        { "key": "Content-Type", "value": "application/javascript" }
-      ]
-    },
-    {
-      "source": "/Build/**/*.wasm",
-      "headers": [
+        { "key": "Content-Encoding", "value": "br" },
         { "key": "Content-Type", "value": "application/wasm" }
       ]
     },
     {
-      "source": "/Build/**/*.data",
+      "source": "/Build/(.*).data.br",
       "headers": [
+        { "key": "Content-Encoding", "value": "br" },
         { "key": "Content-Type", "value": "application/octet-stream" }
       ]
     }
