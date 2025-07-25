@@ -3,6 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- Mobile-optimized meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Tung Tung Tung Sahur</title>
     <style>
         body {
@@ -10,11 +14,17 @@
             padding: 0;
             background: #000;
             overflow: hidden;
+            /* Prevent touch scrolling */
+            touch-action: none;
+            -ms-touch-action: none;
         }
         #unity-container {
             position: absolute;
             width: 100%;
             height: 100%;
+            /* Mobile-specific adjustments */
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
         }
         #unity-canvas {
             width: 100%;
@@ -68,16 +78,53 @@
             console.log(type + ": " + msg);
         }
 
+        // Detect mobile devices
+        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         var config = {
-            dataUrl: buildUrl + "/tungTungCompile.data.br",
-            frameworkUrl: buildUrl + "/tungTungCompile.framework.js.br",
-            codeUrl: buildUrl + "/tungTungCompile.wasm.br",
+            dataUrl: buildUrl + "/tungTungCompile.data" + (isMobile ? "" : ".br"),
+            frameworkUrl: buildUrl + "/tungTungCompile.framework.js" + (isMobile ? "" : ".br"),
+            codeUrl: buildUrl + "/tungTungCompile.wasm" + (isMobile ? "" : ".br"),
             streamingAssetsUrl: "StreamingAssets",
             companyName: "DefaultCompany",
             productName: "Tung tung tung sahur",
             productVersion: "1.0",
             showBanner: unityShowBanner,
+            // Mobile-specific WebGL context attributes
+            webglContextAttributes: {
+                preserveDrawingBuffer: true,
+                antialias: isMobile ? false : true,
+                stencil: true,
+                alpha: false
+            },
+            compatibilityCheck: function(graphicsDevice, supported) {
+                if (!supported && isMobile) {
+                    alert("Your device might not support all required features, but we'll try anyway.");
+                    return true; // Force continue on mobile
+                }
+                return supported;
+            }
         };
+
+        // Add a mobile-specific error handler
+        function handleMobileError(message) {
+            if (isMobile) {
+                loadingScreen.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <h2>Mobile Device Detected</h2>
+                        <p>${message || 'There was an issue loading the game'}</p>
+                        <p>Try these steps:</p>
+                        <ul style="text-align: left;">
+                            <li>Use Chrome or Firefox browser</li>
+                            <li>Ensure you have good internet connection</li>
+                            <li>Close other apps to free up memory</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                alert("Failed to load game: " + message);
+            }
+        }
 
         var script = document.createElement("script");
         script.src = loaderUrl;
@@ -86,12 +133,19 @@
                 progressBar.style.width = (100 * progress) + "%";
             }).then(() => {
                 loadingScreen.style.display = "none";
+                // Additional mobile setup after load
+                if (isMobile) {
+                    // Prevent accidental zooming
+                    document.addEventListener('gesturestart', function(e) {
+                        e.preventDefault();
+                    });
+                }
             }).catch((message) => {
-                alert("Failed to load game: " + message);
+                handleMobileError(message);
             });
         };
         script.onerror = () => {
-            alert("Failed to load Unity script. Please check your build files.");
+            handleMobileError("Failed to load Unity script. Please check your build files.");
         };
         document.body.appendChild(script);
     </script>
